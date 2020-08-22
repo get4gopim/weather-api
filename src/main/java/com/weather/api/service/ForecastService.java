@@ -36,30 +36,30 @@ public class ForecastService {
             int locationIndex = htmlRawText.indexOf("Weather");
             String location = htmlRawText.substring(0, locationIndex - 1);
             LOGGER.debug(location);
-            info.setLocation(location);
+            info.setLocation(location.trim());
 
             int asOfIndex = htmlRawText.indexOf("as of");
             int istIndex = htmlRawText.indexOf("IST");
 
             String asOf = htmlRawText.substring(asOfIndex + 6, istIndex - 1);
-            info.setAsOf(asOf);
+            info.setAsOf(asOf.trim());
 
-            String temp = htmlRawText.substring(istIndex + 4, istIndex + 7);
+            String temp = htmlRawText.substring(istIndex + 4, istIndex + 6);
             LOGGER.debug(temp);
-            info.setTemperature(temp);
+            info.setTemperature(temp.trim());
 
             int condIndex = htmlRawText.indexOf(temp);
 
             int lowIndex = htmlRawText.indexOf("/");
-            String low = htmlRawText.substring(lowIndex - 2, lowIndex);
-            String high = htmlRawText.substring(lowIndex + 1, lowIndex + 4);
+            String low = htmlRawText.substring(lowIndex - 3, lowIndex - 1);
+            String high = htmlRawText.substring(lowIndex + 1, lowIndex + 3);
             LOGGER.debug(low + " " + high);
-            info.setHigh(high);
-            info.setLow(low);
+            info.setHigh(high.trim());
+            info.setLow(low.trim());
 
             String condition = htmlRawText.substring(condIndex + 4, lowIndex - 3);
             LOGGER.debug(condition);
-            info.setCurrentCondition(condition);
+            info.setCurrentCondition(condition.trim());
 
         } catch (Exception ex) {
             LOGGER.error("Unable to fetch weather info", ex);
