@@ -5,6 +5,8 @@ public class RateInfo {
     private String goldRate22;
     private String goldRate24;
     private String silver;
+    private String lastUpdateTime;
+    private String date;
 
     public String getGoldRate22() {
         return goldRate22;
@@ -30,12 +32,30 @@ public class RateInfo {
         this.silver = silver;
     }
 
+    public String getLastUpdateTime() {
+        return lastUpdateTime;
+    }
+
+    public void setLastUpdateTime(String lastUpdateTime) {
+        this.lastUpdateTime = lastUpdateTime;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
     @Override
     public String toString() {
         return "RateInfo{" +
                 "goldRate22='" + goldRate22 + '\'' +
                 ", goldRate24='" + goldRate24 + '\'' +
                 ", silver='" + silver + '\'' +
+                ", lastUpdateTime='" + lastUpdateTime + '\'' +
+                ", date='" + date + '\'' +
                 '}';
     }
 }

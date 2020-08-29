@@ -1,13 +1,16 @@
 package com.weather.api.service;
 
+import com.weather.api.model.FuelRateInfo;
 import com.weather.api.model.RateInfo;
 import com.weather.api.model.WeatherInfo;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 @Component
 public class ForecastService {
@@ -16,7 +19,112 @@ public class ForecastService {
 
     public static void main(String[] args) {
         ForecastService ws = new ForecastService();
-        System.out.println( ws.getGoldRateInfo() );
+        System.out.println( ws.getLiveFuelRate() );
+    }
+
+    public FuelRateInfo getLiveFuelRate() {
+        String moviesLinkUrl = String.format("https://www.livechennai.com/petrol_price.asp");
+
+        FuelRateInfo info = new FuelRateInfo();
+
+        try {
+            LOGGER.info("Url: {}", moviesLinkUrl);
+
+            Document doc = Jsoup.connect(moviesLinkUrl).timeout(30 * 1000).get();
+
+            Element table = doc.select("table#BC_GridView1").get(0);
+
+            // LOGGER.debug(table.text());
+            /*String lastUpdatedTime = ele.select("p.mob-cont ").text();
+            if (!StringUtils.isEmpty(lastUpdatedTime) &&
+                    lastUpdatedTime.indexOf(":") > 0) {
+                lastUpdatedTime = lastUpdatedTime.substring(lastUpdatedTime.indexOf(":")+1);
+            }
+            LOGGER.debug(lastUpdatedTime);*/
+
+            Elements rows = table.select("tr");
+            Element dateRow = rows.get(1);
+
+            String fuelDate = dateRow.child(0).text();
+            String petrolPrice = dateRow.child(1).text();
+            LOGGER.debug(fuelDate);
+            LOGGER.debug(petrolPrice);
+
+            table = table = doc.select("table#BC_GridView1").get(1);
+
+            rows = table.select("tr");
+            dateRow = rows.get(1);
+            fuelDate = dateRow.child(0).text();
+            String dieselPrice = dateRow.child(1).text();
+            LOGGER.debug(fuelDate);
+            LOGGER.debug(dieselPrice);
+
+            info.setPetrolPrice(petrolPrice);
+            info.setDieselPrice(dieselPrice);
+            info.setLastUpdatedTime("6.00 AM");
+            info.setDate(fuelDate);
+
+            LOGGER.info(info.toString());
+
+        } catch (Exception ex) {
+            LOGGER.error("Unable to fetch gold rate info", ex);
+        }
+
+        return info;
+    }
+
+    public RateInfo getLiveGoldRate() {
+        String moviesLinkUrl = String.format("http://www.livechennai.com/gold_silverrate.asp");
+
+        RateInfo info = new RateInfo();
+
+        try {
+            LOGGER.info("Url: {}", moviesLinkUrl);
+
+            Document doc = Jsoup.connect(moviesLinkUrl).timeout(30 * 1000).get();
+
+            Element ele = doc.select("div.col-sm-8").get(0);
+            LOGGER.debug(ele.select("p.mob-cont ").text());
+            String lastUpdatedTime = ele.select("p.mob-cont ").text();
+            if (!StringUtils.isEmpty(lastUpdatedTime) &&
+                    lastUpdatedTime.indexOf(":") > 0) {
+                lastUpdatedTime = lastUpdatedTime.substring(lastUpdatedTime.indexOf(":")+1);
+            }
+            LOGGER.debug(lastUpdatedTime);
+            Elements table = ele.select("table.table-price");
+
+            Elements rows = table.select("tr");
+            Element dateRow = rows.get(2);
+
+            String goldDate = dateRow.child(0).text();
+            String goldPrice22 = dateRow.child(1).text();
+            String goldPrice24 = dateRow.child(3).text();
+            LOGGER.debug(goldDate);
+            LOGGER.debug(goldPrice22);
+
+            ele = doc.select("div.col-sm-8").get(1);
+            table = ele.select("table.table-price");
+
+            rows = table.select("tr");
+            dateRow = rows.get(1);
+            String silverDate = dateRow.child(0).text();
+            String silverPrice = dateRow.child(1).text();
+            LOGGER.debug(silverDate);
+            LOGGER.debug(silverPrice);
+
+            info.setGoldRate22(goldPrice22);
+            info.setGoldRate24(goldPrice24);
+            info.setSilver(silverPrice);
+            info.setLastUpdateTime(lastUpdatedTime);
+            info.setDate(goldDate);
+
+            LOGGER.info(info.toString());
+
+        } catch (Exception ex) {
+            LOGGER.error("Unable to fetch gold rate info", ex);
+        }
+
+        return info;
     }
 
     public WeatherInfo getWeatherInfo() {
@@ -67,6 +175,8 @@ public class ForecastService {
 
         return info;
     }
+
+
 
     public RateInfo getGoldRateInfo() {
         String moviesLinkUrl = String.format("https://www.sktm.in/");

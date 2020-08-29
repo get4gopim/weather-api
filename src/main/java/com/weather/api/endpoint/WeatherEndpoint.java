@@ -1,5 +1,6 @@
 package com.weather.api.endpoint;
 
+import com.weather.api.model.FuelRateInfo;
 import com.weather.api.model.RateInfo;
 import com.weather.api.model.WeatherInfo;
 import com.weather.api.service.ForecastService;
@@ -27,7 +28,12 @@ public class WeatherEndpoint {
 
     @GetMapping(path = "/gold")
     public RateInfo getGoldRateInfo() {
-        return forecastService.getGoldRateInfo();
+        return forecastService.getLiveGoldRate();
+    }
+
+    @GetMapping(path = "/fuel")
+    public FuelRateInfo getFuelRateInfo() {
+        return forecastService.getLiveFuelRate();
     }
 
 }
