@@ -97,8 +97,8 @@ public class ForecastService {
             Element dateRow = rows.get(2);
 
             String goldDate = dateRow.child(0).text();
-            String goldPrice22 = dateRow.child(1).text();
-            String goldPrice24 = dateRow.child(3).text();
+            String goldPrice24 = dateRow.child(1).text();
+            String goldPrice22 = dateRow.child(3).text();
             LOGGER.debug(goldDate);
             LOGGER.debug(goldPrice22);
 
