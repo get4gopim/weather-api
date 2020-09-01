@@ -19,7 +19,7 @@ public class ForecastService {
 
     public static void main(String[] args) {
         ForecastService ws = new ForecastService();
-        System.out.println( ws.getLiveFuelRate() );
+        System.out.println( ws.getWeatherInfo() );
     }
 
     public FuelRateInfo getLiveFuelRate() {
@@ -139,35 +139,72 @@ public class ForecastService {
 
             Elements segTemp = doc.select("div#WxuCurrentConditions-main-b3094163-ef75-4558-8d9a-e35e6b9b1034");
             String htmlRawText = segTemp.text();
-            LOGGER.info(segTemp.text());
 
-            int locationIndex = htmlRawText.indexOf("Weather");
-            String location = htmlRawText.substring(0, locationIndex - 1);
+            Elements locTag = segTemp.select("h1._-_-node_modules--wxu-components-src-organism-CurrentConditions-CurrentConditions--location--1Ayv3");
+            LOGGER.debug(locTag.text());
+            String location = locTag.text();
+            int locationIndex = location.indexOf(" Weather");
+            location = location.substring(0, locationIndex).trim();
             LOGGER.debug(location);
-            info.setLocation(location.trim());
+            info.setLocation(location);
 
-            int asOfIndex = htmlRawText.indexOf("as of");
-            int istIndex = htmlRawText.indexOf("IST");
+            Elements asOfTag = segTemp.select("div._-_-node_modules--wxu-components-src-organism-CurrentConditions-CurrentConditions--timestamp--1SWy5");
+            LOGGER.debug(asOfTag.text());
+            String asOf = asOfTag.text();
+            int asOfIndex = asOf.indexOf("as of");
+            int istIndex = asOf.indexOf(" IST");
 
-            String asOf = htmlRawText.substring(asOfIndex + 6, istIndex - 1);
-            info.setAsOf(asOf.trim());
+            asOf = asOf.substring(asOfIndex + 6, istIndex).trim();
+            info.setAsOf(asOf);
+            LOGGER.debug(asOf);
 
-            String temp = htmlRawText.substring(istIndex + 4, istIndex + 6);
+
+            Elements tempTag = segTemp.select("span._-_-node_modules--wxu-components-src-organism-CurrentConditions-CurrentConditions--tempValue--3KcTQ");
+            LOGGER.debug(tempTag.text());
+
+            String temp = tempTag.text();
+            if (temp.length() > 2) {
+                temp = temp.substring(0, 2).trim();
+            }
             LOGGER.debug(temp);
             info.setTemperature(temp.trim());
 
-            int condIndex = htmlRawText.indexOf(temp);
 
-            int lowIndex = htmlRawText.indexOf("/");
-            String low = htmlRawText.substring(lowIndex - 3, lowIndex - 1);
-            String high = htmlRawText.substring(lowIndex + 1, lowIndex + 3);
+            Elements condTag = segTemp.select("div._-_-node_modules--wxu-components-src-organism-CurrentConditions-CurrentConditions--phraseValue--2xXSr");
+            LOGGER.debug(condTag.text());
+            String condition = condTag.text().trim();
+            info.setCurrentCondition(condition);
+            LOGGER.debug(condition);
+
+
+            Elements hlTag = segTemp.select("div._-_-node_modules--wxu-components-src-organism-CurrentConditions-CurrentConditions--tempHiLoValue--A4RQE");
+            LOGGER.debug(hlTag.text());
+            String highLow = hlTag.text();
+
+            int idx = highLow.indexOf("/");
+            String high = temp;
+            String low = temp;
+            if (idx > 0) {
+                high = highLow.substring(0, idx);
+                if (high.equals("--")) {
+                    high = temp;
+                }
+                low = highLow.substring(idx+1, highLow.length());
+            }
             LOGGER.debug(low + " " + high);
+
             info.setHigh(high.trim());
             info.setLow(low.trim());
 
-            String condition = htmlRawText.substring(condIndex + 4, lowIndex - 3);
-            LOGGER.debug(condition);
-            info.setCurrentCondition(condition.trim());
+            Elements precipTag = segTemp.select("div._-_-node_modules--wxu-components-src-organism-CurrentConditions-CurrentConditions--precipValue--RBVJT");
+            String preciption = "";
+            if (precipTag != null) {
+                LOGGER.debug(precipTag.text());
+                preciption = precipTag.text();
+            }
+            info.setPreciption(preciption);
+
+            LOGGER.info(info.toString());
 
         } catch (Exception ex) {
             LOGGER.error("Unable to fetch weather info", ex);

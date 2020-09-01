@@ -10,6 +10,7 @@ public class WeatherInfo implements Serializable {
     private String asOf;
     private String currentCondition;
     private String location;
+    private String preciption;
 
     public String getTemperature() {
         return temperature;
@@ -59,15 +60,25 @@ public class WeatherInfo implements Serializable {
         this.location = location;
     }
 
+    public String getPreciption() {
+        return preciption;
+    }
+
+    public void setPreciption(String preciption) {
+        this.preciption = preciption;
+    }
+
     @Override
     public String toString() {
-        return "WeatherInfo{" +
-                "temperature='" + temperature + '\'' +
-                ", low='" + low + '\'' +
-                ", high='" + high + '\'' +
-                ", asOf='" + asOf + '\'' +
-                ", currentCondition='" + currentCondition + '\'' +
-                ", location='" + location + '\'' +
-                '}';
+        final StringBuilder sb = new StringBuilder("WeatherInfo{");
+        sb.append("temperature='").append(temperature).append('\'');
+        sb.append(", low='").append(low).append('\'');
+        sb.append(", high='").append(high).append('\'');
+        sb.append(", asOf='").append(asOf).append('\'');
+        sb.append(", currentCondition='").append(currentCondition).append('\'');
+        sb.append(", location='").append(location).append('\'');
+        sb.append(", preciption='").append(preciption).append('\'');
+        sb.append('}');
+        return sb.toString();
     }
 }
